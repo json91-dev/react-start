@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+</head>
+<body>
+  <div id="root"></div> <!-- -->
+  <script>
+    const e = React.createElement;
+
+    // 리엑트 안에 컴포넌트를 가져와서 상속을 합니다.
+    class LikeButton extends React.Component {
+      // 프로그램 실행시 같이 실행된다.
+      constructor(props) {
+        super(props);
+      }
+
+      // 화면 표시를 위한 메서드
+      render() {
+        return e('button', null, 'Like');// <button>Like<button> 을 '만들겠다'
+      }
+    }
+  </script>
+  <script>
+    // 실제로 '만들겠다' 한것을 그려주는 메서드
+    ReactDOM.render(e(LikeButton), document.querySelector("#root"));
+  </script>
+</body>
+</html>
