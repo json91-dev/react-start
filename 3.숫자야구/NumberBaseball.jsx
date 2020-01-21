@@ -3,10 +3,10 @@ import Try from './Try';
 
 class NumberBaseball extends Component {
   state = {
-    answer: this.getNumbers(), // ex [1, 5, 3, 4]
-    tries: [], // 시도
     value: '',
     result: '',
+    answer: this.getNumbers(), // ex [1, 5, 3, 4]
+    tries: [], // 시도
   };
 
   getNumbers() {
@@ -20,33 +20,81 @@ class NumberBaseball extends Component {
     return array;
   }
 
-  onSubmitForm = () => {
+  input;
 
+  onRefInput = (c) => {
+    this.input = c;
   };
 
-  onChangeInput = () => {
+  onSubmitForm = (e) => {
+    e.preventDefault();
+    if (this.state.value === this.state.answer.join('')) { // join함수는 배열을 하나로 만든다.
 
+
+      this.setState({
+        value: '',
+        result: '홈런',
+        answer: this.getNumbers(),
+        tries: [this.state.tries, { try: this.state.value, result: '홈런' }],
+      });
+
+      this.input.focus();
+      alert('[정답] 게임을 다시 실행합니다.');
+
+    } else { // 답 틀렸을
+      if (this.state.tries.length >= 9) {
+        this.setState({
+          value: '',
+          result: `10번 넘게 틀려서 실패! 답은 ${this.state.answer.join(',')}였습니다.`,
+          answer: this.getNumbers(),
+          tries: []
+        });
+        this.input.focus();
+        alert('게임을 다시 실행합니다.');
+
+        return;
+      }
+
+      let strike = 0;
+      let ball = 0;
+
+      // 문자열을 숫자 배열로 바꿈.
+      const answerArray = this.state.value.split('').map(v => parseInt(v));
+      for (let i=0; i<4; i+= 1) {
+        if(answerArray[i] === this.state.answer[i]) { // 숫자 자릿수 모두 정답
+          strike ++;
+        } else if (this.state.answer.includes(answerArray[i])) {
+          ball ++;
+        }
+      }
+
+      this.setState({
+        value: '',
+        tries: [...this.state.tries, { try: this.state.value, result: `${strike} 스트라이크, ${ball} 볼입니다.` }]
+      });
+
+      this.input.focus();
+    }
   };
 
-  fruit = [
-    {fruit: '사과', taste: '맛있다'},
-    {fruit: '바나나', taste: '맛없다.'},
-    {fruit: '포도', taste: '달당~!'},
-  ];
+  onChange = (e) => {
+    this.setState({value: e.target.value})
+  };
+
 
   render() {
     return (
       <>
         <h1>{this.state.result}</h1>
         <form onSubmit={this.onSubmitForm}>
-          <input ref="" minLength="4" maxLength="4" value={this.state.value} onChange={this.onChangeInput}/>
+          <input ref={this.onRefInput} minLength="4" maxLength="4" value={this.state.value} onChange={this.onChange}/>
           <button>입력!!!</button>
         </form>
         <div>시도: {this.state.tries.length}</div>
         <ul>
-          {this.fruit.map((v, i) => {
+          {this.state.tries.map((v, i) => {
             return (
-              <Try value={v} index={i} />
+              <Try key={`${i + 1}차 시도 :`} tryInfo = {v} />
             )
           })}
         </ul>
