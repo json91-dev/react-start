@@ -1,16 +1,45 @@
-import React, {Component} from 'react';
+// Hooks로 전환함
+
+import React, {PureComponent, memo} from 'react';
 
 
-class Try extends Component {
+const Try = memo(({ tryInfo }) => {
 
-  render() {
-    return (
-      <li>
-        <div>{this.props.tryInfo.try}</div>
-        <div>{this.props.tryInfo.result}</div>
-      </li>
-    )
-  }
-}
+  return (
+    <li>
+      <div>{tryInfo.try}</div>
+      <div>{tryInfo.result}</div>
+    </li>
+  )
+});
+
+// class Try extends PureComponent {
+//   constructor(props) {
+//     super(props);
+//
+//     const filtered = this.props.filter(() => {
+//
+//     })
+//     this.state = {
+//       result: filtered,
+//       try: this.props.try,
+//     }
+//   }
+// }
+
+
+// class Try extends PureComponent {
+//   render() {
+//     const { tryInfo } = this.props;
+//     return (
+//       <li>
+//         <div>{tryInfo.try}</div>
+//         <div>{tryInfo.result}</div>
+//       </li>
+//     )
+//   }
+// }
+
+
 
 export default Try;
