@@ -15,7 +15,7 @@ class ResponseCheck extends Component {
     this.setState({
       result: [],
     })
-  }
+  };
 
   onClickScreen = () => {
     const { state, message, result } = this.state;
