@@ -26,6 +26,33 @@ class Lotto extends Component {
     redo: false,
   };
 
+  timeouts = [];
+  componentDidMount() {
+    const { winNumbers } = this.state;
+    for (let i = 0; i < this.state.winNumbers -1; i++) {
+       this.timeouts[i] = setTimeout(() => {
+         this.setState((prevState) => {
+           // 리엑트에 state배열에 값을 넣을때는 push를 사용하면 안되고 아래와 같이 사용하여야 한다.
+           return {
+             winBalls: [...prevState.winBalls,  winNumbers[i]],
+           }
+         });
+       }, (i + 1) * 1000);
+    }
+    this.timeouts[6] = setTimeout(() => {
+      this.setState({
+        bonus: winNumbers[6],
+        redo: true,
+      }, 7000)
+    })
+  }
+
+  componentWillUnmount() {
+    this.timeouts.forEach((v) => {
+      clearTimeout(v);
+    })
+  }
+
   render() {
     const { winNumbers, bonus, redo } = this.state;
     return (
