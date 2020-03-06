@@ -18,7 +18,7 @@ function getWinNumbers() {
   return [...winNumbers, bonusNumber];
 }
 
-class Lotto extends Component {
+class LottoClass extends Component {
   state = {
     winNumbers: getWinNumbers(),
     winBalls: [],
@@ -27,24 +27,30 @@ class Lotto extends Component {
   };
 
   timeouts = [];
-  componentDidMount() {
+
+  runTimeouts = () => {
     const { winNumbers } = this.state;
-    for (let i = 0; i < this.state.winNumbers -1; i++) {
-       this.timeouts[i] = setTimeout(() => {
-         this.setState((prevState) => {
-           // 리엑트에 state배열에 값을 넣을때는 push를 사용하면 안되고 아래와 같이 사용하여야 한다.
-           return {
-             winBalls: [...prevState.winBalls,  winNumbers[i]],
-           }
-         });
-       }, (i + 1) * 1000);
+    for (let i = 0; i < winNumbers.length -1; i++) {
+      this.timeouts[i] = setTimeout(() => {
+        this.setState((prevState) => {
+          // 리엑트에 state배열에 값을 넣을때는 push를 사용하면 안되고 아래와 같이 사용하여야 한다.
+          return {
+            winBalls: [...prevState.winBalls,  winNumbers[i]],
+          }
+        });
+      }, (i + 1) * 1000);
     }
+
     this.timeouts[6] = setTimeout(() => {
       this.setState({
         bonus: winNumbers[6],
         redo: true,
-      }, 7000)
-    })
+      })
+    }, 7000)
+  };
+
+  componentDidMount() {
+    this.runTimeouts();
   }
 
   componentWillUnmount() {
@@ -53,8 +59,26 @@ class Lotto extends Component {
     })
   }
 
+  // 특정 상황을 만족할때 componentDidUpdate 수
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.winBalls.length === 0) {
+      this.runTimeouts();
+    }
+  }
+
+  // 한번 더 뽑을 때 기존 스테이트 초기화
+  onClickRedo = () => {
+    this.setState({
+      winNumbers: getWinNumbers(),
+      winBalls: [],
+      bonus: null,
+      redo: false,
+    });
+    this.timeouts = [];
+  };
+
   render() {
-    const { winNumbers, bonus, redo } = this.state;
+    const { winBalls, bonus, redo } = this.state;
     return (
       <>
         <div>당첨 숫자></div>
@@ -69,4 +93,4 @@ class Lotto extends Component {
   }
 }
 
-export default Lotto;
+export default LottoClass;
