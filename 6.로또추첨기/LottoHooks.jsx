@@ -51,7 +51,11 @@ const Lotto = () => {
   }, [timeouts.current]); // 두번째 인자가 빈배열이면 componentDidMount와 동일
   // 배열에 요소가 있으면 componentDidMount와 componentDidUpdate를 둘 다 수행
   // 배열안에 조건을 삽입하면 해당 조건이 만족시 componentDidUpdate처럼 동작합니다.
-
+  
+  // 조건 추가.
+  useEffect(() => {
+    console.log('로또 숫자를 생성합니다.');
+  }, [winNumbers]);
 
   // const onClickRedo = () => {
   //   console.log('onClickRedo');
@@ -60,6 +64,14 @@ const Lotto = () => {
   //   setBonus(null);
   //   timeouts.current = [];
   // };
+  const mounted = useRef(false);
+  useEffect(() => {
+    if (!mounted) {
+      mounted.current = true;
+    } else {
+      //Ajax 수행
+    }
+  }); // componentDidUpdate만, componentDidMount X
 
   // useCallback으로 만들게 되면 함수 자체를 기억합니다.
   // 함수 컴포넌트가 재실행되어도, 함수(onClickRedo)가 새로 생성되지 않습니다.
