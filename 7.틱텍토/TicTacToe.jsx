@@ -9,7 +9,8 @@ const initialState = {
   tableData: [['','',''],['','',''],['','','']],
 };
 
-const SET_WINNER = 'SET_WINNER';
+export const SET_WINNER = 'SET_WINNER';
+export const CLICK_CELL = 'CLICK_CELL';
 // 줄인다라는 의미의 함수이다.
 const reducer = (state, action) => {
   switch(action.type) {
@@ -17,8 +18,21 @@ const reducer = (state, action) => {
       return {
         ...state,
         winner: action.winner,
+      };
+    case CLICK_CELL:
+      const tableData = [...state.tableData];
+      // immer라는 라이브러리로 가독성 해결
+      // 불변성 해결
+      // tableData[action.row] = [tableData[action.row] => 불변성이 유지되지 않음..
+      tableData[action.row] = [...tableData[action.row]];
+      tableData[action.row][action.cell] = state.turn;
+      
+      return {
+        ...state,
+        tableData,
       }
   }
+
 };
 
 const TicTaeToe = () => {
@@ -27,6 +41,8 @@ const TicTaeToe = () => {
   // const [tableData, setTableData] = useState([['','',''],['','',''],['','','']]);
   
   // 액션을 dispatch, 하고 액션 수
+  // 컴포넌트에 넣는 함수들은 모두 useCallback을 사용
+  // Dispatch 안에들어가는 아이들을 ACTION 이라고 함
   const onClickTable = useCallback(() => {
     dispatch({type: 'SET_WINNER', winner: 'O'})
   }, []);

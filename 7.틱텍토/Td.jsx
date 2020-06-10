@@ -1,8 +1,14 @@
-import React from 'react';
+import React, {useCallback} from 'react';
+import CLICK_CELL from './TicTacToe'
 
-const Td = () => {
+const Td = ({ rowIndex, cellIndex }) => {
+  const onClickTd = useCallback(() => {
+    console.log(rowIndex, cellIndex);
+    dispatch({ type: CLICK_CELL, row: rowIndex, cell: cellIndex});
+  }, []);
+  
   return (
-      <td>{''}</td>
+      <td onClick={onClickTd}>{''}</td>
   )
 };
 
