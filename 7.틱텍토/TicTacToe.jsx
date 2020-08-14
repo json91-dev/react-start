@@ -7,10 +7,12 @@ const initialState = {
   winner: '',
   turn: '0',
   tableData: [['','',''],['','',''],['','','']],
+  recentCell: [-1, -1]
 };
 
 export const SET_WINNER = 'SET_WINNER';
 export const CLICK_CELL = 'CLICK_CELL';
+export const CHANGE_TURN = 'CHANGE_TURN';
 // 줄인다라는 의미의 함수이다.
 const reducer = (state, action) => {
   switch(action.type) {
@@ -30,16 +32,24 @@ const reducer = (state, action) => {
       return {
         ...state,
         tableData,
+        recentCell: [action.row, action.cell]
+      };
+      
+    case CHANGE_TURN: {
+      return {
+        ...state,
+        turn: state.turn === 'O' ? 'X' : 'O'
       }
+    }
   }
-
 };
 
 const TicTaeToe = () => {
   // const [winner, setWinner] = useState('');
   // const [turn, setTurn] = useState('0');
   // const [tableData, setTableData] = useState([['','',''],['','',''],['','','']]);
-  
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { tableData, turn, winner } = state;
   // 액션을 dispatch, 하고 액션 수
   // 컴포넌트에 넣는 함수들은 모두 useCallback을 사용
   // Dispatch 안에들어가는 아이들을 ACTION 이라고 함
@@ -47,11 +57,32 @@ const TicTaeToe = () => {
     dispatch({type: 'SET_WINNER', winner: 'O'})
   }, []);
   
-  const [state, dispatch] = useReducer(reducer, initialState);
+  // dispatch 수행이 비동기적으로 일어나기때문에 useEffect를 사용하여 처리.
+  
+  useEffect(() => {
+    const [row, cell] = recentCell;
+    let win = false;
+    if (tableData[row][0] === turn && tableData[row][1] === turn && tableData[row][2] === turn) {
+      win = true;
+    }
+    
+    if (tableData[0][cell] === turn && tableData[1][cell] === turn && tableData[2][cell] === turn) {
+      win = true;
+    }
+    
+    if (tableData[0][0] === turn && tableData[1][1] === turn && tableData[2][2] === turn) {
+    
+    }
+    
+    if (tableData[0][2] === turn && tableData[1][1] === turn && tableData[2][0] === turn) {
+      win = ture;
+    }
+  }, [tableData]);
+  
   
   return (
     <>
-      <Table onClick={onClickTable} tableData={state.tableData}/>
+      <Table onClick={onClickTable} tableData={tableData} dispatch={dispatch}/>
       {/*테이블을을 클릭하면 O로 바꿈*/}
      {state.winner && <div>{state.winner}님의 승리</div>}
     </>
