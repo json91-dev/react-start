@@ -1,7 +1,45 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useContext } from 'react';
+import { CODE, TableContext } from './MineSearch';
 
-const Td = () => {
+const getTdStyle = (code) => {
+  switch(code) {
+    case CODE.NORMAL:
+    case CODE.MINE:
+      return {
+        background: '#444',
+      };
+    case CODE.OPENED:
+      return {
+        background: 'white'
+      };
+    default:
+      return {
+        background: 'white'
+      }
 
+  }
+};
+
+
+const getTdText = (code) => {
+  switch(code) {
+    case CODE.NORMAL:
+      return '';
+    case CODE.MINE:
+      return 'X';
+    case CODE.OPENED:
+      return '';
+
+  }
+}
+
+const Td = ({rowIndex, cellIndex}) => {
+  const { tableData } = useContext(TableContext);
+  return (
+    <td
+      style={getTdStyle(tableData[rowIndex][cellIndex])}
+    >{getTdText(tableData[rowIndex][cellIndex])}</td>
+  )
 };
 
 export default Td;
