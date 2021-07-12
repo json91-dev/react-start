@@ -15,16 +15,22 @@ export const CODE = {
 
 export const TableContext = createContext({
   // 초기값을 설정한다.
-  tableData: [
-    [-1, -1, -1, -1, -1, -7, -1,],
-    [-1, -7, -1, -1, -1, -1, -1,],
-    [-1, -1, -1, -1, -1, -1, -1,],
-    [-1, -1, -1, -7, -1, -1, -1,],
-    [-1, -1, -1, -1, -1, -7, -1,],
-  ],
+  tableData: [],
+  halted: true,
+  result: '',
+  timer: 0,
   dispatch: () => {
   },
 });
+
+// Reducer의 초기 State
+const initialState = {
+  tableData: [],
+  timer: 0,
+  result: '',
+  halted: true
+};
+
 
 const plantMine = (row, cell, mine) => {
   console.log(row, cell, mine);
@@ -58,32 +64,100 @@ const plantMine = (row, cell, mine) => {
   return data;
 };
 
-const initialState = {
-  tableData: [],
-  timer: 0,
-  result: '',
-};
 
-export  const START_GAME = 'START_GAME';
+export const START_GAME = 'START_GAME';
+export const OPEN_CELL = 'OPEN_CELL';
+export const CLICK_MINE = 'CLICK_NAME';
+export const FLAG_CELL = 'FLAG_CELL';
+export const QUESTION_CELL = 'QUESTION_CELL';
+export const NORMALIZE_CELL = 'NORMALIZE_CELL';
+
 
 const reducer = (state, action) => {
   switch (action.type) {
     case START_GAME: {
       return {
         ...state,
-        tableData: plantMine(action.row, action.cell, action.mine)
+        tableData: plantMine(action.row, action.cell, action.mine),
+        halted: false,
       }
     }
+
+    case OPEN_CELL: {
+      const tableData = [...state.tableData];
+      tableData[action.row] = [...state.tableData[action.row]];
+      tableData[action.row][action.cell] = CODE.OPENED;
+      return {
+        ...state,
+        tableData,
+      }
+    }
+
+    case CLICK_MINE: {
+      const tableData = [...state.tableData];
+      tableData[action.row] = [...state.tableData[action.row]];
+      tableData[action.row][action.cell] = CODE.CLICKED_MINE;
+      return {
+        ...state,
+        tableData,
+        halted: true,
+      }
+    }
+
+    case FLAG_CELL: {
+      const tableData = [...state.tableData];
+      tableData[action.row] = [...state.tableData[action.row]];
+      if(tableData[action.row][action.cell] === CODE.MINE) {
+        tableData[action.row][action.cell] = CODE.FLAG_MINE;
+      } else {
+        tableData[action.row][action.cell] = CODE.FLAG;
+      }
+      return {
+        ...state,
+        tableData,
+      }
+    }
+
+    case QUESTION_CELL: {
+      const tableData = [...state.tableData];
+      tableData[action.row] = [...state.tableData[action.row]];
+      if(tableData[action.row][action.cell] === CODE.FLAG_MINE) {
+        tableData[action.row][action.cell] = CODE.QUESTION_MINE;
+      } else {
+        tableData[action.row][action.cell] = CODE.QUESTION;
+      }
+      return {
+        ...state,
+        tableData,
+      }
+    }
+
+    case NORMALIZE_CELL: {
+      const tableData = [...state.tableData];
+      tableData[action.row] = [...state.tableData[action.row]];
+      if(tableData[action.row][action.cell] === CODE.QUESTION_MINE) {
+        tableData[action.row][action.cell] = CODE.MINE;
+      } else {
+        tableData[action.row][action.cell] = CODE.NORMAL;
+      }
+      return {
+        ...state,
+        tableData,
+      }
+    }
+
     default:
       return state;
   }
 };
 
 const MineSearch = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [ state, dispatch ] = useReducer(reducer, initialState);
+  const { tableData, halted, timer, result } = state;
   // 캐싱
   // dispatch는 항상 바뀌기 때문에 바뀌는 목록에 추가하지 않아도 됨.
-  const value = useMemo(()=> ({tableData: state.tableData, dispatch}), [state.tableData]);
+  // Context를 통해 Reducer의 Data를 전파함.
+  const value = useMemo(()=> ({tableData, halted ,dispatch}), [tableData, halted]);
 
   /**
    * 전달할 값을 value로 전달함.
